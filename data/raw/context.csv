@@ -1,0 +1,5 @@
+adslot_id,media,device,os,geo,hour
+s01,newsapp,mobile,ios,NY,10
+s02,video,pc,win,CA,10
+s03,social,mobile,android,TX,10
+s04,gaming,pc,mac,FL,10
