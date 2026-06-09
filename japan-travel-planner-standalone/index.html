@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan AI Travel Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            sakura: { DEFAULT: '#ff7eb3', dark: '#ff4d94' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    .gradient-hero { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%); }
+    .sakura-glow { box-shadow: 0 0 20px rgba(255,126,179,0.3); }
+    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+    .tab-active { border-bottom: 2px solid #ff7eb3; color: #ff7eb3; }
+    .animate-spin-slow { animation: spin 2s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .budget-bar { transition: width 0.8s ease; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+    input[type=range] { accent-color: #ff7eb3; }
+    input[type=checkbox] { accent-color: #ff7eb3; }
+    .prose p { margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+<!-- NAVIGATION -->
+<nav class="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
+  <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
+    <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+      <span class="text-xl">🌸</span>
+      <span class="font-bold text-white">Japan Planner</span>
+    </div>
+    <div class="flex items-center gap-1 text-sm">
+      <button onclick="showPage('home')" class="px-3 py-1.5 rounded-lg hover:bg-gray-800 transition" id="nav-home">首页</button>
+      <button onclick="showPage('plan')" class="px-3 py-1.5 rounded-lg hover:bg-gray-800 transition" id="nav-plan">规划行程</button>
+      <button onclick="showPage('trips')" class="px-3 py-1.5 rounded-lg hover:bg-gray-800 transition" id="nav-trips">历史行程</button>
+      <button onclick="showPage('favorites')" class="px-3 py-1.5 rounded-lg hover:bg-gray-800 transition" id="nav-favorites">收藏夹</button>
+      <button onclick="showPage('settings')" class="ml-2 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition text-xs">⚙️ API设置</button>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGES -->
+<div class="pt-14">
+
+  <!-- HOME PAGE -->
+  <div id="page-home">
+    <!-- Hero -->
+    <div class="gradient-hero min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-20">
+      <div class="mb-4 text-5xl">🗾</div>
+      <h1 class="text-5xl font-bold text-white mb-4">AI 日本旅行规划师</h1>
+      <p class="text-xl text-indigo-200 mb-8 max-w-xl">输入你的偏好，AI 为你生成专属的日本行程、酒店推荐和预算规划</p>
+      <button onclick="showPage('plan')" class="px-8 py-3 bg-pink-500 hover:bg-pink-400 text-white font-semibold rounded-full sakura-glow transition text-lg">
+        开始规划 →
+      </button>
+      <div class="mt-12 grid grid-cols-3 gap-8 text-indigo-200 text-sm max-w-lg">
+        <div><div class="text-3xl mb-2">🤖</div>GPT-4o 驱动</div>
+        <div><div class="text-3xl mb-2">📍</div>地图可视化</div>
+        <div><div class="text-3xl mb-2">💴</div>智能预算</div>
+      </div>
+    </div>
+    <!-- Cities -->
+    <div class="max-w-7xl mx-auto px-4 py-16">
+      <h2 class="text-2xl font-bold text-center mb-8">热门目的地</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">🗼</div><div class="font-medium">东京</div><div class="text-xs text-gray-400">Tokyo</div>
+        </div>
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">⛩️</div><div class="font-medium">京都</div><div class="text-xs text-gray-400">Kyoto</div>
+        </div>
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">🦌</div><div class="font-medium">奈良</div><div class="text-xs text-gray-400">Nara</div>
+        </div>
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">🍣</div><div class="font-medium">大阪</div><div class="text-xs text-gray-400">Osaka</div>
+        </div>
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">🗻</div><div class="font-medium">富士山</div><div class="text-xs text-gray-400">Mt. Fuji</div>
+        </div>
+        <div class="card-hover bg-gray-900 rounded-xl p-4 text-center cursor-pointer border border-gray-800" onclick="showPage('plan')">
+          <div class="text-3xl mb-2">♨️</div><div class="font-medium">箱根</div><div class="text-xs text-gray-400">Hakone</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN PAGE -->
+  <div id="page-plan" class="hidden max-w-4xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold mb-2">规划你的日本之旅</h1>
+    <p class="text-gray-400 mb-8">填写下方信息，AI 将为你生成完整行程</p>
+
+    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-6">
+      <!-- Cities -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-3 text-pink-400">📍 目的地城市（可多选）</label>
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-2" id="cities-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium mb-2 text-pink-400">📅 出发日期</label>
+          <input type="date" id="start-date" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-pink-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2 text-pink-400">📅 返回日期</label>
+          <input type="date" id="end-date" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-pink-500" />
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-2 text-pink-400">💴 预算：<span id="budget-display" class="text-white">¥200,000</span></label>
+        <input type="range" id="budget-slider" min="50000" max="2000000" step="10000" value="200000"
+          oninput="document.getElementById('budget-display').textContent = '¥' + parseInt(this.value).toLocaleString()"
+          class="w-full h-2 rounded-lg appearance-none bg-gray-700" />
+        <div class="flex justify-between text-xs text-gray-500 mt-1"><span>¥50,000</span><span>¥2,000,000</span></div>
+      </div>
+
+      <!-- Interests -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-3 text-pink-400">❤️ 兴趣爱好（可多选）</label>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="interests-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Travel Style -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-3 text-pink-400">🎒 旅行风格</label>
+        <div class="flex gap-3 flex-wrap">
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="style" value="relaxed" checked class="accent-pink-500" /><span class="text-sm">悠闲慢游</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="style" value="balanced" class="accent-pink-500" /><span class="text-sm">均衡适中</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="style" value="packed" class="accent-pink-500" /><span class="text-sm">行程丰富</span></label>
+        </div>
+      </div>
+
+      <button onclick="generateItinerary()" id="generate-btn"
+        class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold rounded-xl transition text-lg">
+        ✨ AI 生成行程
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-state" class="hidden text-center py-16">
+      <div class="text-5xl mb-4 animate-spin-slow inline-block">🌸</div>
+      <p class="text-xl text-gray-300 mb-2">AI 正在规划你的行程...</p>
+      <p class="text-gray-500 text-sm">通常需要 15-30 秒</p>
+    </div>
+
+    <!-- Result -->
+    <div id="itinerary-result" class="hidden"></div>
+  </div>
+
+  <!-- TRIPS PAGE -->
+  <div id="page-trips" class="hidden max-w-4xl mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-1">历史行程</h1>
+        <p class="text-gray-400">你之前规划过的所有日本行程</p>
+      </div>
+      <button onclick="clearTrips()" class="text-xs text-gray-500 hover:text-red-400 transition">清空历史</button>
+    </div>
+    <div id="trips-list"></div>
+  </div>
+
+  <!-- FAVORITES PAGE -->
+  <div id="page-favorites" class="hidden max-w-4xl mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-1">收藏夹</h1>
+        <p class="text-gray-400">你收藏的地点和景点</p>
+      </div>
+      <button onclick="clearFavorites()" class="text-xs text-gray-500 hover:text-red-400 transition">清空收藏</button>
+    </div>
+    <div id="favorites-list"></div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div id="page-settings" class="hidden max-w-xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold mb-2">API 设置</h1>
+    <p class="text-gray-400 mb-8">填入你的 API Key，存储在本地浏览器，不会上传</p>
+    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-5">
+      <div>
+        <label class="block text-sm font-medium mb-2 text-pink-400">OpenAI API Key <span class="text-gray-500 font-normal">（必填，用于生成行程）</span></label>
+        <input type="password" id="openai-key-input" placeholder="sk-proj-..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-pink-500 font-mono text-sm" />
+        <p class="text-xs text-gray-500 mt-1">在 <a href="https://platform.openai.com/api-keys" target="_blank" class="text-pink-400 hover:underline">platform.openai.com</a> 获取</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2 text-pink-400">Google Maps API Key <span class="text-gray-500 font-normal">（可选，用于显示地图）</span></label>
+        <input type="password" id="maps-key-input" placeholder="AIza..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-pink-500 font-mono text-sm" />
+        <p class="text-xs text-gray-500 mt-1">在 <a href="https://console.cloud.google.com" target="_blank" class="text-pink-400 hover:underline">Google Cloud Console</a> 获取，需启用 Maps JavaScript API</p>
+      </div>
+      <button onclick="saveSettings()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-400 text-white font-semibold rounded-xl transition">
+        保存设置
+      </button>
+      <div id="settings-msg" class="hidden text-center text-green-400 text-sm">✅ 已保存！</div>
+    </div>
+
+    <div class="mt-6 bg-gray-900 rounded-2xl p-6 border border-gray-800">
+      <h3 class="font-semibold mb-3 text-yellow-400">⚠️ 安全提示</h3>
+      <ul class="text-sm text-gray-400 space-y-1.5">
+        <li>• API Key 仅存储在你的浏览器本地（localStorage），不会发送到任何第三方服务器</li>
+        <li>• 此工具仅供个人本地使用，请勿在公共电脑上使用</li>
+        <li>• OpenAI API 调用会产生费用，请注意用量</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- TRIP DETAIL MODAL -->
+<div id="trip-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto">
+  <div class="min-h-screen flex items-start justify-center p-4 pt-10">
+    <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-3xl">
+      <div class="flex items-center justify-between p-6 border-b border-gray-800">
+        <h2 class="text-xl font-bold" id="modal-title">行程详情</h2>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <div id="modal-content" class="p-6"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+const JAPAN_CITIES = [
+  { name: '东京', en: 'Tokyo', emoji: '🗼' },
+  { name: '京都', en: 'Kyoto', emoji: '⛩️' },
+  { name: '大阪', en: 'Osaka', emoji: '🍣' },
+  { name: '奈良', en: 'Nara', emoji: '🦌' },
+  { name: '广岛', en: 'Hiroshima', emoji: '🕊️' },
+  { name: '神户', en: 'Kobe', emoji: '🌉' },
+  { name: '箱根', en: 'Hakone', emoji: '♨️' },
+  { name: '日光', en: 'Nikko', emoji: '🌲' },
+  { name: '镰仓', en: 'Kamakura', emoji: '🏯' },
+  { name: '名古屋', en: 'Nagoya', emoji: '🏙️' },
+  { name: '札幌', en: 'Sapporo', emoji: '❄️' },
+  { name: '冲绳', en: 'Okinawa', emoji: '🌺' },
+  { name: '富士山', en: 'Mt. Fuji', emoji: '🗻' },
+  { name: '仙台', en: 'Sendai', emoji: '🎋' },
+  { name: '金泽', en: 'Kanazawa', emoji: '🎨' },
+];
+
+const INTERESTS = [
+  { id: 'food', label: '🍜 美食', en: 'food and cuisine' },
+  { id: 'temples', label: '⛩️ 寺庙神社', en: 'temples and shrines' },
+  { id: 'nature', label: '🌿 自然风景', en: 'nature and scenery' },
+  { id: 'anime', label: '🎌 动漫文化', en: 'anime and pop culture' },
+  { id: 'shopping', label: '🛍️ 购物', en: 'shopping' },
+  { id: 'onsen', label: '♨️ 温泉', en: 'onsen hot springs' },
+  { id: 'nightlife', label: '🌃 夜生活', en: 'nightlife and bars' },
+  { id: 'history', label: '🏯 历史文化', en: 'history and culture' },
+  { id: 'hiking', label: '🥾 徒步爬山', en: 'hiking' },
+  { id: 'photography', label: '📸 摄影', en: 'photography spots' },
+  { id: 'kids', label: '👶 亲子游', en: 'family friendly activities' },
+  { id: 'luxury', label: '💎 奢华体验', en: 'luxury experiences' },
+];
+
+// ==================== STATE ====================
+let currentPage = 'home';
+let currentItinerary = null;
+
+// ==================== INIT ====================
+function init() {
+  renderCitiesGrid();
+  renderInterestsGrid();
+  setDefaultDates();
+  loadSettings();
+  showPage('home');
+}
+
+function renderCitiesGrid() {
+  const grid = document.getElementById('cities-grid');
+  grid.innerHTML = JAPAN_CITIES.map(c => `
+    <label class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 cursor-pointer transition">
+      <input type="checkbox" class="city-cb accent-pink-500" value="${c.en}" data-name="${c.name}" />
+      <span class="text-sm">${c.emoji} ${c.name}</span>
+    </label>
+  `).join('');
+}
+
+function renderInterestsGrid() {
+  const grid = document.getElementById('interests-grid');
+  grid.innerHTML = INTERESTS.map(i => `
+    <label class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 cursor-pointer transition">
+      <input type="checkbox" class="interest-cb accent-pink-500" value="${i.en}" />
+      <span class="text-sm">${i.label}</span>
+    </label>
+  `).join('');
+}
+
+function setDefaultDates() {
+  const today = new Date();
+  const next30 = new Date(today.getTime() + 30 * 86400000);
+  const next37 = new Date(today.getTime() + 37 * 86400000);
+  document.getElementById('start-date').value = next30.toISOString().split('T')[0];
+  document.getElementById('end-date').value = next37.toISOString().split('T')[0];
+}
+
+// ==================== NAVIGATION ====================
+function showPage(page) {
+  ['home','plan','trips','favorites','settings'].forEach(p => {
+    document.getElementById('page-' + p).classList.add('hidden');
+    const nav = document.getElementById('nav-' + p);
+    if (nav) nav.classList.remove('bg-gray-800', 'text-pink-400');
+  });
+  document.getElementById('page-' + page).classList.remove('hidden');
+  const nav = document.getElementById('nav-' + page);
+  if (nav) nav.classList.add('bg-gray-800', 'text-pink-400');
+  currentPage = page;
+
+  if (page === 'trips') renderTrips();
+  if (page === 'favorites') renderFavorites();
+}
+
+// ==================== SETTINGS ====================
+function loadSettings() {
+  const ok = localStorage.getItem('openai_key');
+  const gk = localStorage.getItem('maps_key');
+  if (ok) document.getElementById('openai-key-input').value = ok;
+  if (gk) document.getElementById('maps-key-input').value = gk;
+}
+
+function saveSettings() {
+  const ok = document.getElementById('openai-key-input').value.trim();
+  const gk = document.getElementById('maps-key-input').value.trim();
+  if (ok) localStorage.setItem('openai_key', ok);
+  if (gk) localStorage.setItem('maps_key', gk);
+  const msg = document.getElementById('settings-msg');
+  msg.classList.remove('hidden');
+  setTimeout(() => msg.classList.add('hidden'), 2000);
+}
+
+// ==================== GENERATE ITINERARY ====================
+async function generateItinerary() {
+  const openaiKey = localStorage.getItem('openai_key');
+  if (!openaiKey) {
+    alert('请先在"API设置"页面填入你的 OpenAI API Key！');
+    showPage('settings');
+    return;
+  }
+
+  const cities = [...document.querySelectorAll('.city-cb:checked')].map(c => c.value);
+  const interests = [...document.querySelectorAll('.interest-cb:checked')].map(c => c.value);
+  const startDate = document.getElementById('start-date').value;
+  const endDate = document.getElementById('end-date').value;
+  const budget = document.getElementById('budget-slider').value;
+  const style = document.querySelector('input[name="style"]:checked')?.value || 'balanced';
+
+  if (cities.length === 0) { alert('请至少选择一个目的地城市！'); return; }
+  if (!startDate || !endDate) { alert('请选择出发和返回日期！'); return; }
+  if (new Date(endDate) <= new Date(startDate)) { alert('返回日期必须晚于出发日期！'); return; }
+
+  const days = Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000);
+  if (days > 21) { alert('行程天数不能超过21天！'); return; }
+
+  document.getElementById('generate-btn').disabled = true;
+  document.getElementById('generate-btn').textContent = '生成中...';
+  document.getElementById('loading-state').classList.remove('hidden');
+  document.getElementById('itinerary-result').classList.add('hidden');
+
+  const prompt = `You are an expert Japan travel planner. Create a detailed ${days}-day itinerary for Japan.
+
+Trip details:
+- Cities: ${cities.join(', ')}
+- Start date: ${startDate}
+- End date: ${endDate}
+- Total budget: ¥${parseInt(budget).toLocaleString()} JPY
+- Interests: ${interests.length > 0 ? interests.join(', ') : 'general sightseeing'}
+- Travel style: ${style}
+
+Return ONLY valid JSON with this exact structure:
+{
+  "title": "trip title in Chinese",
+  "summary": "2-3 sentence trip overview in Chinese",
+  "days": [
+    {
+      "date": "YYYY-MM-DD",
+      "city": "city name",
+      "theme": "day theme in Chinese",
+      "activities": [
+        {
+          "time": "09:00",
+          "name": "place name in Chinese (English)",
+          "type": "food|sightseeing|shopping|transport|accommodation|nature",
+          "duration": "2小时",
+          "description": "description in Chinese (2-3 sentences)",
+          "tips": "practical tip in Chinese",
+          "cost": 2000,
+          "lat": 35.6762,
+          "lng": 139.6503
+        }
+      ]
+    }
+  ],
+  "hotels": [
+    {
+      "city": "city",
+      "name": "hotel name",
+      "type": "luxury|mid-range|budget",
+      "pricePerNight": 15000,
+      "description": "description in Chinese",
+      "highlights": ["feature1", "feature2"]
+    }
+  ],
+  "transportation": [
+    {
+      "from": "city A",
+      "to": "city B",
+      "method": "bullet train",
+      "duration": "2.5小时",
+      "cost": 14000,
+      "tips": "booking tip in Chinese"
+    }
+  ],
+  "budgetBreakdown": {
+    "accommodation": 50000,
+    "food": 40000,
+    "transportation": 30000,
+    "activities": 20000,
+    "shopping": 30000,
+    "misc": 10000
+  },
+  "travelTips": ["tip1 in Chinese", "tip2 in Chinese", "tip3 in Chinese", "tip4 in Chinese", "tip5 in Chinese"]
+}`;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'API 请求失败');
+    }
+
+    const data = await res.json();
+    const itinerary = JSON.parse(data.choices[0].message.content);
+    currentItinerary = itinerary;
+
+    // Save to history
+    const trips = JSON.parse(localStorage.getItem('trips') || '[]');
+    trips.unshift({
+      id: Date.now(),
+      cities,
+      startDate,
+      endDate,
+      budget: parseInt(budget),
+      createdAt: new Date().toISOString(),
+      itinerary
+    });
+    localStorage.setItem('trips', JSON.stringify(trips.slice(0, 20)));
+
+    document.getElementById('loading-state').classList.add('hidden');
+    const resultEl = document.getElementById('itinerary-result');
+    resultEl.classList.remove('hidden');
+    resultEl.innerHTML = renderItinerary(itinerary);
+    resultEl.scrollIntoView({ behavior: 'smooth' });
+
+  } catch (e) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('itinerary-result').classList.remove('hidden');
+    document.getElementById('itinerary-result').innerHTML = `
+      <div class="bg-red-900/30 border border-red-700 rounded-xl p-6 text-center">
+        <div class="text-3xl mb-3">❌</div>
+        <p class="text-red-400 font-medium mb-2">生成失败</p>
+        <p class="text-gray-400 text-sm">${e.message}</p>
+        <p class="text-gray-500 text-xs mt-2">请检查 API Key 是否正确，或账户余额是否充足</p>
+      </div>`;
+  } finally {
+    document.getElementById('generate-btn').disabled = false;
+    document.getElementById('generate-btn').textContent = '✨ AI 生成行程';
+  }
+}
+
+// ==================== RENDER ITINERARY ====================
+function renderItinerary(itin, showSaveBtn = true) {
+  const totalBudget = Object.values(itin.budgetBreakdown).reduce((a, b) => a + b, 0);
+  const budgetColors = {
+    accommodation: 'bg-blue-500',
+    food: 'bg-green-500',
+    transportation: 'bg-yellow-500',
+    activities: 'bg-purple-500',
+    shopping: 'bg-pink-500',
+    misc: 'bg-gray-500'
+  };
+  const budgetLabels = {
+    accommodation: '住宿', food: '餐饮', transportation: '交通',
+    activities: '景点', shopping: '购物', misc: '其他'
+  };
+
+  const mapsKey = localStorage.getItem('maps_key');
+
+  return `
+    <div class="space-y-6">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-2xl p-6 border border-indigo-700">
+        <h2 class="text-2xl font-bold mb-2">${itin.title || '日本行程'}</h2>
+        <p class="text-gray-300">${itin.summary || ''}</p>
+        ${showSaveBtn ? `<button onclick="saveCurrentTrip()" class="mt-4 px-4 py-2 bg-pink-500 hover:bg-pink-400 text-white text-sm font-medium rounded-lg transition">💾 已自动保存到历史行程</button>` : ''}
+      </div>
+
+      <!-- Day tabs -->
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="flex overflow-x-auto border-b border-gray-800 bg-gray-900/50">
+          ${itin.days.map((day, i) => `
+            <button onclick="switchDay(${i})" id="day-tab-${i}"
+              class="flex-shrink-0 px-4 py-3 text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap ${i === 0 ? 'tab-active' : 'text-gray-400'}">
+              Day ${i+1}<br><span class="text-xs opacity-70">${day.city}</span>
+            </button>
+          `).join('')}
+        </div>
+        ${itin.days.map((day, i) => `
+          <div id="day-content-${i}" class="${i !== 0 ? 'hidden' : ''} p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm font-medium">${day.date}</span>
+              <span class="text-gray-300 font-medium">${day.theme}</span>
+            </div>
+            <div class="space-y-3">
+              ${day.activities.map(act => `
+                <div class="flex gap-4 bg-gray-800 rounded-xl p-4 group">
+                  <div class="flex-shrink-0 text-center">
+                    <div class="text-xs text-gray-500 font-mono">${act.time}</div>
+                    <div class="text-2xl mt-1">${activityEmoji(act.type)}</div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                      <h4 class="font-medium text-white">${act.name}</h4>
+                      <div class="flex items-center gap-2 flex-shrink-0">
+                        ${act.cost > 0 ? `<span class="text-xs text-yellow-400 font-mono">¥${act.cost.toLocaleString()}</span>` : ''}
+                        <button onclick="toggleFavorite('${escapeStr(act.name)}', '${act.type}', '${escapeStr(act.description)}')"
+                          class="text-gray-600 hover:text-pink-400 transition text-lg leading-none" title="收藏">♡</button>
+                      </div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-1">${act.duration} · ${activityLabel(act.type)}</div>
+                    <p class="text-sm text-gray-300 leading-relaxed">${act.description}</p>
+                    ${act.tips ? `<p class="text-xs text-indigo-400 mt-1">💡 ${act.tips}</p>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Hotels -->
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+        <h3 class="text-lg font-bold mb-4">🏨 推荐住宿</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          ${itin.hotels.map(h => `
+            <div class="bg-gray-800 rounded-xl p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <h4 class="font-medium">${h.name}</h4>
+                  <span class="text-xs text-gray-400">${h.city}</span>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full ${h.type === 'luxury' ? 'bg-yellow-500/20 text-yellow-400' : h.type === 'mid-range' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}">
+                  ${h.type === 'luxury' ? '豪华' : h.type === 'mid-range' ? '中档' : '经济'}
+                </span>
+              </div>
+              <p class="text-sm text-gray-300 mb-2">${h.description}</p>
+              <div class="flex items-center justify-between">
+                <div class="text-xs text-gray-400 flex flex-wrap gap-1">
+                  ${(h.highlights || []).map(hl => `<span class="bg-gray-700 px-2 py-0.5 rounded">${hl}</span>`).join('')}
+                </div>
+                <span class="text-yellow-400 font-mono text-sm">¥${h.pricePerNight?.toLocaleString()}/晚</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Transport -->
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+        <h3 class="text-lg font-bold mb-4">🚅 交通路线</h3>
+        <div class="space-y-3">
+          ${itin.transportation.map(t => `
+            <div class="flex items-center gap-4 bg-gray-800 rounded-xl p-4">
+              <div class="text-2xl">🚅</div>
+              <div class="flex-1">
+                <div class="font-medium">${t.from} → ${t.to}</div>
+                <div class="text-sm text-gray-400">${t.method} · ${t.duration}</div>
+                ${t.tips ? `<div class="text-xs text-indigo-400 mt-0.5">💡 ${t.tips}</div>` : ''}
+              </div>
+              <div class="text-yellow-400 font-mono text-sm">¥${t.cost?.toLocaleString()}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+        <h3 class="text-lg font-bold mb-4">💴 预算分解</h3>
+        <div class="space-y-3">
+          ${Object.entries(itin.budgetBreakdown).map(([k, v]) => `
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-300">${budgetLabels[k] || k}</span>
+                <span class="text-white font-mono">¥${v.toLocaleString()}</span>
+              </div>
+              <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-full budget-bar ${budgetColors[k] || 'bg-gray-500'} rounded-full"
+                  style="width: ${Math.round(v/totalBudget*100)}%"></div>
+              </div>
+            </div>
+          `).join('')}
+          <div class="pt-2 border-t border-gray-700 flex justify-between font-semibold">
+            <span>合计</span>
+            <span class="text-pink-400 font-mono">¥${totalBudget.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      ${itin.travelTips && itin.travelTips.length > 0 ? `
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+        <h3 class="text-lg font-bold mb-4">🌟 旅行贴士</h3>
+        <ul class="space-y-2">
+          ${itin.travelTips.map(tip => `<li class="flex gap-2 text-sm text-gray-300"><span class="text-pink-400 flex-shrink-0">•</span>${tip}</li>`).join('')}
+        </ul>
+      </div>` : ''}
+
+      ${mapsKey ? renderMap(itin) : `
+      <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 text-center">
+        <p class="text-gray-400 text-sm">💡 填入 Google Maps API Key 后可查看地图</p>
+        <button onclick="showPage('settings')" class="mt-2 text-pink-400 text-sm hover:underline">前往设置</button>
+      </div>`}
+    </div>
+  `;
+}
+
+function renderMap(itin) {
+  const mapsKey = localStorage.getItem('maps_key');
+  const allActivities = itin.days.flatMap(d => d.activities.filter(a => a.lat && a.lng));
+  if (allActivities.length === 0) return '';
+
+  const center = allActivities[0];
+  const markers = allActivities.map(a =>
+    `markers=color:red%7Clabel:${encodeURIComponent(a.name[0])}%7C${a.lat},${a.lng}`
+  ).join('&');
+
+  return `
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+      <div class="p-4 border-b border-gray-800"><h3 class="text-lg font-bold">📍 行程地图</h3></div>
+      <img
+        src="https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=10&size=800x400&maptype=roadmap&${markers}&key=${mapsKey}&style=element:geometry%7Ccolor:0x242f3e"
+        class="w-full" alt="行程地图" onerror="this.parentElement.innerHTML='<p class=\\'text-gray-500 text-sm text-center p-4\\'>地图加载失败，请检查 Google Maps API Key</p>'"
+      />
+    </div>`;
+}
+
+function switchDay(index) {
+  const itin = currentItinerary;
+  if (!itin) return;
+  itin.days.forEach((_, i) => {
+    document.getElementById(`day-tab-${i}`)?.classList.remove('tab-active');
+    document.getElementById(`day-tab-${i}`)?.classList.add('text-gray-400');
+    document.getElementById(`day-content-${i}`)?.classList.add('hidden');
+  });
+  document.getElementById(`day-tab-${index}`)?.classList.add('tab-active');
+  document.getElementById(`day-tab-${index}`)?.classList.remove('text-gray-400');
+  document.getElementById(`day-content-${index}`)?.classList.remove('hidden');
+}
+
+// ==================== TRIPS ====================
+function renderTrips() {
+  const trips = JSON.parse(localStorage.getItem('trips') || '[]');
+  const el = document.getElementById('trips-list');
+  if (trips.length === 0) {
+    el.innerHTML = `<div class="text-center py-16 text-gray-500">
+      <div class="text-5xl mb-4">🗺️</div>
+      <p class="mb-4">还没有历史行程</p>
+      <button onclick="showPage('plan')" class="px-4 py-2 bg-pink-500 text-white rounded-lg text-sm">开始规划</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="space-y-4">${trips.map(t => `
+    <div class="card-hover bg-gray-900 rounded-2xl border border-gray-800 p-5 cursor-pointer" onclick="viewTrip(${t.id})">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="font-bold text-lg mb-1">${t.itinerary?.title || '日本行程'}</h3>
+          <div class="flex flex-wrap gap-2 mb-2">
+            ${t.cities.map(c => `<span class="text-xs bg-indigo-900/50 text-indigo-300 px-2 py-0.5 rounded-full">${c}</span>`).join('')}
+          </div>
+          <p class="text-sm text-gray-400">${t.startDate} → ${t.endDate}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-yellow-400 font-mono text-sm">¥${t.budget.toLocaleString()}</div>
+          <div class="text-xs text-gray-500 mt-1">${new Date(t.createdAt).toLocaleDateString('zh-CN')}</div>
+        </div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function viewTrip(id) {
+  const trips = JSON.parse(localStorage.getItem('trips') || '[]');
+  const trip = trips.find(t => t.id === id);
+  if (!trip) return;
+  const savedCurrent = currentItinerary;
+  currentItinerary = trip.itinerary;
+  document.getElementById('modal-title').textContent = trip.itinerary?.title || '行程详情';
+  document.getElementById('modal-content').innerHTML = renderItinerary(trip.itinerary, false);
+  document.getElementById('trip-modal').classList.remove('hidden');
+  currentItinerary = savedCurrent;
+}
+
+function closeModal() {
+  document.getElementById('trip-modal').classList.add('hidden');
+}
+
+function clearTrips() {
+  if (confirm('确定要清空所有历史行程吗？')) {
+    localStorage.removeItem('trips');
+    renderTrips();
+  }
+}
+
+// ==================== FAVORITES ====================
+function toggleFavorite(name, type, description) {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const exists = favorites.find(f => f.name === name);
+  if (exists) {
+    const updated = favorites.filter(f => f.name !== name);
+    localStorage.setItem('favorites', JSON.stringify(updated));
+    showToast(`已取消收藏 ${name}`);
+  } else {
+    favorites.unshift({ id: Date.now(), name, type, description, savedAt: new Date().toISOString() });
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    showToast(`❤️ 已收藏 ${name}`);
+  }
+}
+
+function renderFavorites() {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const el = document.getElementById('favorites-list');
+  if (favorites.length === 0) {
+    el.innerHTML = `<div class="text-center py-16 text-gray-500">
+      <div class="text-5xl mb-4">❤️</div>
+      <p class="mb-4">还没有收藏的地点</p>
+      <p class="text-sm">在行程中点击 ♡ 按钮收藏地点</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="grid md:grid-cols-2 gap-4">${favorites.map(f => `
+    <div class="card-hover bg-gray-900 rounded-2xl border border-gray-800 p-4">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">${activityEmoji(f.type)}</span>
+          <div>
+            <h3 class="font-medium">${f.name}</h3>
+            <span class="text-xs text-gray-400">${activityLabel(f.type)}</span>
+          </div>
+        </div>
+        <button onclick="removeFavorite(${f.id})" class="text-gray-600 hover:text-red-400 transition">✕</button>
+      </div>
+      ${f.description ? `<p class="text-sm text-gray-400 mt-2 line-clamp-2">${f.description}</p>` : ''}
+      <div class="text-xs text-gray-600 mt-2">${new Date(f.savedAt).toLocaleDateString('zh-CN')}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function removeFavorite(id) {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]').filter(f => f.id !== id);
+  localStorage.setItem('favorites', JSON.stringify(favorites));
+  renderFavorites();
+}
+
+function clearFavorites() {
+  if (confirm('确定要清空所有收藏吗？')) {
+    localStorage.removeItem('favorites');
+    renderFavorites();
+  }
+}
+
+// ==================== HELPERS ====================
+function activityEmoji(type) {
+  const map = { food: '🍜', sightseeing: '🏛️', shopping: '🛍️', transport: '🚅', accommodation: '🏨', nature: '🌿' };
+  return map[type] || '📍';
+}
+function activityLabel(type) {
+  const map = { food: '美食', sightseeing: '观光', shopping: '购物', transport: '交通', accommodation: '住宿', nature: '自然' };
+  return map[type] || '景点';
+}
+function escapeStr(str) {
+  return (str || '').replace(/'/g, "\\'").replace(/"/g, '\\"').substring(0, 100);
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 text-white px-5 py-2.5 rounded-full text-sm z-50 shadow-xl transition-opacity';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+// Close modal on backdrop click
+document.getElementById('trip-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Init
+init();
+</script>
+</body>
+</html>
