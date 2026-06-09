@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
 import { TripPlan } from './types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-});
+function getOpenAIClient() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || 'placeholder',
+  });
+}
 
 export interface GenerateItineraryParams {
   cities: string[];
@@ -98,6 +100,7 @@ Please create a detailed day-by-day itinerary that:
 9. Details all transportation between cities
 10. Creates a realistic budget breakdown`;
 
+  const openai = getOpenAIClient();
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',
     messages: [
@@ -126,4 +129,4 @@ Please create a detailed day-by-day itinerary that:
   };
 }
 
-export default openai;
+export default getOpenAIClient;
