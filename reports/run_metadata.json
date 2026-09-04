@@ -1,0 +1,47 @@
+{
+  "config": {
+    "rows": 15000,
+    "data_seed": 2026,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "ppo_steps": 30000,
+    "budget_per_opportunity": 0.35,
+    "max_bid": 5.0,
+    "conversion_value": 30.0
+  },
+  "source_sha256": "f23629da2032cc5f77a4c4cc9c2be9c7feb38c72be1f905af4d151fabc86310b",
+  "python": "3.12.13",
+  "versions": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.8.0",
+    "torch": "2.8.0+cpu",
+    "stable-baselines3": "2.7.0",
+    "gymnasium": "1.2.0"
+  },
+  "data_sha256": "fe16e3fb508990dea62b0a31b183d677180cf7aa1daee5c3b24bb5e2c60e2db6",
+  "activity_sha256": "2922eb9844054881203d89dbd36ae307eb4dac76811af8a1a3afb05c2de0816d",
+  "split": {
+    "train": {
+      "n": 9000,
+      "start": "2025-01-01T00:00:00+00:00",
+      "end": "2025-01-04T02:59:30+00:00"
+    },
+    "validation": {
+      "n": 3000,
+      "start": "2025-01-04T03:00:00+00:00",
+      "end": "2025-01-05T03:59:30+00:00"
+    },
+    "test": {
+      "n": 3000,
+      "start": "2025-01-05T04:00:00+00:00",
+      "end": "2025-01-06T04:59:30+00:00"
+    }
+  },
+  "ppo_actual_steps_per_seed": 30208,
+  "bandit_steps_per_seed": 30000,
+  "elapsed_seconds": 50.99
+}

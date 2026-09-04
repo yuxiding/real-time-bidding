@@ -1,0 +1,13 @@
+# Direct dependencies used for the published Python 3.12 benchmark.
+# On Linux install CPU torch first; see README. Transitive versions are not locked.
+numpy==2.3.5
+pandas==2.2.3
+scikit-learn==1.8.0
+matplotlib==3.10.8
+joblib==1.5.3
+torch==2.8.0
+stable-baselines3==2.7.0
+gymnasium==1.2.0
+fastapi==0.116.1
+uvicorn==0.35.0
+-e .[dev]
