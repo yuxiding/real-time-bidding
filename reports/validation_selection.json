@@ -1,0 +1,25 @@
+{
+  "value_multiplier": 0.5,
+  "scores": [
+    {
+      "multiplier": 0.0,
+      "profit": 0.0
+    },
+    {
+      "multiplier": 0.5,
+      "profit": 1521.8527923547617
+    },
+    {
+      "multiplier": 1.0,
+      "profit": 1440.044403923494
+    },
+    {
+      "multiplier": 1.5,
+      "profit": 780.0723786002568
+    },
+    {
+      "multiplier": 2.0,
+      "profit": 450.03109729817714
+    }
+  ]
+}

@@ -1,5 +1,0 @@
-adslot_id,adslot_enc,media_gaming,media_newsapp,media_social,media_video,device_mobile,device_pc,os_android,os_ios,os_mac,os_win,geo_CA,geo_FL,geo_NY,geo_TX,hour_10
-s01,0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0
-s02,1,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0
-s03,2,0.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0
-s04,3,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0

@@ -1,0 +1,56 @@
+[
+  {
+    "target": "ctr",
+    "model": "logistic",
+    "split": "validation",
+    "auc": 0.6938892888443722,
+    "log_loss": 0.36174666524652743,
+    "brier": 0.10750707626390958,
+    "n": 3000
+  },
+  {
+    "target": "ctr",
+    "model": "boosted",
+    "split": "validation",
+    "auc": 0.6693865813196445,
+    "log_loss": 0.37057767959563276,
+    "brier": 0.10996370399944393,
+    "n": 3000
+  },
+  {
+    "target": "cvr",
+    "model": "logistic",
+    "split": "validation",
+    "auc": 0.6849898580121703,
+    "log_loss": 0.5330401690662736,
+    "brier": 0.1760729604256055,
+    "n": 392
+  },
+  {
+    "target": "cvr",
+    "model": "boosted",
+    "split": "validation",
+    "auc": 0.6561528059499662,
+    "log_loss": 0.5510348606537785,
+    "brier": 0.18380320855967108,
+    "n": 392
+  },
+  {
+    "target": "ctr",
+    "model": "logistic",
+    "split": "test",
+    "auc": 0.6781025252462518,
+    "log_loss": 0.3699796369308308,
+    "brier": 0.10976206469553348,
+    "n": 3000
+  },
+  {
+    "target": "cvr",
+    "model": "logistic",
+    "split": "test",
+    "auc": 0.6744958113558797,
+    "log_loss": 0.5513906322208848,
+    "brier": 0.18433303271392415,
+    "n": 403
+  }
+]

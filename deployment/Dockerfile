@@ -1,24 +1,11 @@
-# Dockerfile for AuroraBid Engine
-
-FROM python:3.10-slim
-
-# Set working directory
+FROM python:3.12-slim
 WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install Python dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy source code
-COPY . .
-
-# Expose port
+COPY pyproject.toml README.md ./
+COPY src ./src
+RUN python -m pip install --no-cache-dir torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu \
+    && python -m pip install --no-cache-dir .
+RUN useradd --create-home appuser && chown -R appuser:appuser /app
+USER appuser
+ENV AURORABID_MODEL_DIR=/models
 EXPOSE 8000
-
-# Run API server using Gunicorn
-CMD ["gunicorn", "src.serving.api:app", "-c", "deployment/gunicorn_conf.py"]
+CMD ["uvicorn", "aurorabid.api:app", "--host", "0.0.0.0", "--port", "8000"]
