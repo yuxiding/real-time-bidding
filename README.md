@@ -1,17 +1,58 @@
 # AuroraBid
 
-**From click prediction to budget-constrained bidding decisions.**
+**Optimizing advertising bids under a fixed budget.**
 
-AuroraBid is a reproducible advertising-auction simulator connecting supervised
-learning, contextual bandits, reinforcement learning, and an inference API.
-It asks: **how should an advertiser bid when opportunities have different
-expected values and the campaign has a fixed budget?**
+I developed AuroraBid to study **how an advertiser should allocate a limited
+budget across advertising opportunities with different expected values**.
+The project connects probability prediction to sequential bidding decisions,
+using a reproducible auction simulator to compare simple and learned policies.
+The focus is the optimization problem: choosing bids to earn net profit while
+respecting spending constraints.
 
 The benchmark uses **fully synthetic data**. It demonstrates modeling and
 engineering decisions; it does not measure production revenue or live ad traffic.
 
 [Results](reports/RESULTS.md) · [Design decisions](docs/design.md) ·
 [Executed demo](notebooks/demo.ipynb)
+
+## Optimization problem and reward design
+
+| Element | Formulation |
+|---|---|
+| Decision | Choose a bid for each advertising opportunity using the information available at that time |
+| Objective | Maximize expected cumulative net profit over a fixed campaign horizon |
+| Constraints | Total spend cannot exceed the campaign budget; each bid is capped by the maximum bid and remaining budget |
+| Uncertainty | Competing prices and conversion outcomes are hidden when the bid is chosen |
+
+For a policy $\pi$, the campaign-level objective is:
+
+$
+\max_{\pi}\;\mathbb{E}_{\pi}\left[\sum_{t=1}^{T}(V y_t-c_t)\right],
+\qquad
+\sum_{t=1}^{T}c_t \leq B.
+$
+
+Here $V$ is the fixed value of a conversion, $y_t$ is 1 only when the bidder
+wins and the opportunity converts, $c_t$ is the actual auction cost, and $B$
+is the campaign budget. A lost auction has zero revenue and zero cost.
+
+The per-auction training reward is normalized net profit:
+
+$
+r_t = \frac{V y_t-c_t}{V}.
+$
+
+With fixed positive $V$, this scaling preserves the ordering of undiscounted
+cumulative-profit outcomes. Budget feasibility is enforced separately by hard
+spending limits rather than a reward penalty. PPO retains its default discount
+factor of 0.99, so its discounted training criterion differs from the
+undiscounted campaign profit reported in evaluation.
+
+Predicted click and conditional conversion probabilities estimate each
+opportunity's value. Learned policies select a multiplier from
+$\{0, 0.5, 1, 1.5, 2\}$ to apply to that value, using remaining budget and time
+as part of their observations. The project tests these policy choices; it does
+not claim to solve the budget-allocation problem optimally.
 
 ## What is implemented
 
@@ -39,6 +80,13 @@ PPO and LinUCB are evaluated without learning, across seeds 42, 43, and 44.
 Fixed baselines run once. Error bars describe training-seed variation on one fixed
 synthetic holdout. The [complete results](reports/RESULTS.md) include supervised
 metrics and every policy, including underperforming policies.
+
+**Main finding:** in the published benchmark, value-based bidding achieves the
+highest net profit (1,608.31) while using only 58.3% of the budget. LinUCB averages
+1,491.96 and PPO 1,180.14. These results show that the more complex learned
+policies do not automatically outperform a simple value-based rule in this
+setting. PPO also shows substantial training-seed sensitivity; spending the
+entire budget is not itself a measure of success.
 
 ## Run locally
 
