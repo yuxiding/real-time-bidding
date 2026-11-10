@@ -26,11 +26,11 @@ engineering decisions; it does not measure production revenue or live ad traffic
 
 For a policy $\pi$, the campaign-level objective is:
 
-$
+```math
 \max_{\pi}\;\mathbb{E}_{\pi}\left[\sum_{t=1}^{T}(V y_t-c_t)\right],
 \qquad
 \sum_{t=1}^{T}c_t \leq B.
-$
+```
 
 Here $V$ is the fixed value of a conversion, $y_t$ is 1 only when the bidder
 wins and the opportunity converts, $c_t$ is the actual auction cost, and $B$
@@ -38,9 +38,9 @@ is the campaign budget. A lost auction has zero revenue and zero cost.
 
 The per-auction training reward is normalized net profit:
 
-$
+```math
 r_t = \frac{V y_t-c_t}{V}.
-$
+```
 
 With fixed positive $V$, this scaling preserves the ordering of undiscounted
 cumulative-profit outcomes. Budget feasibility is enforced separately by hard
