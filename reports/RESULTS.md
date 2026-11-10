@@ -34,4 +34,9 @@ See [policy_results.csv](policy_results.csv) for every run, including underperfo
 
 ![Policy comparison](policy_comparison.png)
 
+**Figure note:** Synthetic data only. Bars show mean net profit; black error bars
+show ±1 sample standard deviation across training seeds on the same test set.
+Fixed baselines were run once, so their error bars are set to zero; this does not
+mean they have no uncertainty. These error bars do not measure variation across markets.
+
 ![Replay curves](replay_curves.png)

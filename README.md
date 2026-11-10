@@ -71,6 +71,11 @@ not claim to solve the budget-allocation problem optimally.
 
 ![Held-out policy comparison](reports/policy_comparison.png)
 
+**Figure note:** Synthetic data only. Bars show mean net profit; black error bars
+show ±1 sample standard deviation across training seeds on the same test set.
+Fixed baselines were run once, so their error bars are set to zero; this does not
+mean they have no uncertainty. These error bars do not measure variation across markets.
+
 The published experiment uses **15,000 opportunities** split chronologically into
 9,000 training, 3,000 validation, and 3,000 test examples. Each strategy sees the
 same test opportunities and prices, with a **1,050-unit budget**, **5-unit bid

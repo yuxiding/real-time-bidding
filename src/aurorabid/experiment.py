@@ -129,15 +129,13 @@ def make_plots(results, traces, output, config):
     means = results.groupby("policy", sort=False).profit.mean()
     std = results.groupby("policy", sort=False).profit.std().fillna(0.)
     fig, ax = plt.subplots(figsize=(9, 5.4))
-    fig.subplots_adjust(left=.12, right=.97, top=.82, bottom=.25)
+    fig.subplots_adjust(left=.12, right=.97, top=.82, bottom=.13)
     ax.bar(names, means.loc[names], yerr=std.loc[names], color=colors, capsize=5, width=.6)
     ax.axhline(0, color="#596579", linewidth=.8)
     ax.set_ylabel("Simulated net profit (currency units)")
     ax.set_title("Held-out auction replay\nEqual budget, identical opportunities", loc="left", pad=16, weight="bold")
     ax.grid(axis="y", alpha=.15)
     ax.set_axisbelow(True)
-    fig.text(.12, .055, "Synthetic data only. Error bars: mean ± sample SD across training seeds.\nFixed baselines have one run; error bars do not measure market uncertainty.",
-             fontsize=9, va="bottom")
     fig.savefig(output / "policy_comparison.png", dpi=180, bbox_inches="tight")
     plt.close(fig)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
@@ -172,5 +170,5 @@ def write_report(results, supervised, metadata, output):
         lines.append(f"| {row['target'].upper()} | {row['model']} | {row['split']} | {row['n']} | {auc} | {row['log_loss']:.4f} | {row['brier']:.4f} |")
     lines += ["", "## Reproduction metadata", "", "See [run_metadata.json](run_metadata.json) for seeds, split timestamps, dependency versions, data hashes and a source hash.",
               "See [policy_results.csv](policy_results.csv) for every run, including underperforming policies.", "",
-              "![Policy comparison](policy_comparison.png)", "", "![Replay curves](replay_curves.png)", ""]
+              "![Policy comparison](policy_comparison.png)", "", "Synthetic data only. Black error bars show ±1 sample standard deviation across training seeds on one fixed test set. Fixed baselines run once; zero error bars do not imply zero uncertainty. Error bars do not measure variation across markets.", "", "![Replay curves](replay_curves.png)", ""]
     (output / "RESULTS.md").write_text("\n".join(lines))
